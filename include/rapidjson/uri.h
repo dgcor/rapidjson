@@ -36,6 +36,9 @@ public:
 #if RAPIDJSON_HAS_STDSTRING
     typedef std::basic_string<Ch> String;
 #endif
+#if RAPIDJSON_HAS_STDSTRINGVIEW
+    typedef std::basic_string_view<Ch> StringView;
+#endif
 
     //! Constructors
     GenericUri(Allocator* allocator = 0) : uri_(), base_(), scheme_(), auth_(), path_(), query_(), frag_(), allocator_(allocator), ownAllocator_() {
@@ -57,7 +60,13 @@ public:
 
 #if RAPIDJSON_HAS_STDSTRING
     GenericUri(const String& uri, Allocator* allocator = 0) : uri_(), base_(), scheme_(), auth_(), path_(), query_(), frag_(), allocator_(allocator), ownAllocator_() {
-        Parse(uri.c_str(), internal::StrLen<Ch>(uri.c_str()));
+        Parse(uri.c_str(), uri.size());
+    }
+#endif
+
+#if RAPIDJSON_HAS_STDSTRINGVIEW
+    GenericUri(StringView uri, Allocator* allocator = 0) : uri_(), base_(), scheme_(), auth_(), path_(), query_(), frag_(), allocator_(allocator), ownAllocator_() {
+        Parse(uri.c_str(), uri.size());
     }
 #endif
 
@@ -123,6 +132,16 @@ public:
     static String GetPath(const GenericUri& uri) { return String(uri.GetPathString(), uri.GetPathStringLength()); }
     static String GetQuery(const GenericUri& uri) { return String(uri.GetQueryString(), uri.GetQueryStringLength()); }
     static String GetFrag(const GenericUri& uri) { return String(uri.GetFragString(), uri.GetFragStringLength()); }
+#endif
+
+#if RAPIDJSON_HAS_STDSTRINGVIEW
+    static StringView GetStringView(const GenericUri& uri) { return StringView(uri.GetString(), uri.GetStringLength()); }
+    static StringView GetBaseStringView(const GenericUri& uri) { return StringView(uri.GetBaseString(), uri.GetBaseStringLength()); }
+    static StringView GetSchemeStringView(const GenericUri& uri) { return StringView(uri.GetSchemeString(), uri.GetSchemeStringLength()); }
+    static StringView GetAuthStringView(const GenericUri& uri) { return StringView(uri.GetAuthString(), uri.GetAuthStringLength()); }
+    static StringView GetPathStringView(const GenericUri& uri) { return StringView(uri.GetPathString(), uri.GetPathStringLength()); }
+    static StringView GetQueryStringView(const GenericUri& uri) { return StringView(uri.GetQueryString(), uri.GetQueryStringLength()); }
+    static StringView GetFragStringView(const GenericUri& uri) { return StringView(uri.GetFragString(), uri.GetFragStringLength()); }
 #endif
 
     //! Equality operators
